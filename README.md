@@ -1,41 +1,23 @@
-# {{PLUGIN_NAME}}
+# hook-matrix
 
-> Replace this description with what your SemRel plugin does.
+`hook-matrix` is a SemRel hook plugin that posts release announcements to a Matrix room using the Matrix client HTTP API.
 
-This repository is based on the `SemRels/plugin-template` GitHub template and provides a clean starting point for provider, analyzer, generator, updater, or hook plugins.
+## Configuration
 
-## Repository Layout
+Environment variables:
 
-```text
-cmd/plugin/              Plugin entry point
-internal/plugin/         Business logic scaffold
-internal/grpc/           gRPC transport scaffold
-proto/v1                 Symlink to the SemRel protobuf contract
-.github/workflows/       CI, release, and security automation
-```
+- `MATRIX_HOMESERVER`
+- `MATRIX_ROOM_ID`
+- `MATRIX_ACCESS_TOKEN`
 
-## Installation
+## Behavior
 
-Published binaries are distributed through releases and synchronized to `registry.semrel.io`.
+The hook sends a `m.room.message` event containing the release version, repository, and changelog.
 
 ## Development
 
 ```bash
-go build ./cmd/plugin
+go mod tidy
+go build ./...
 go test ./...
 ```
-
-## Configuration
-
-See the SemRel documentation for plugin configuration and runtime integration details:
-
-- https://github.com/SemRels/semrel
-- https://registry.semrel.io
-
-## Next Steps
-
-1. Replace all `{{...}}` placeholders.
-2. Rename the module path in `go.mod`.
-3. Implement your plugin logic in `internal/plugin/`.
-4. Wire generated protobuf bindings into `internal/grpc/`.
-5. Create your first tagged release with `v*.*.*`.
