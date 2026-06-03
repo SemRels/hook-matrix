@@ -17,20 +17,26 @@ plugins:
   - name: hook-matrix
     path: ~/.semrel/plugins/semrel-plugin-hook-matrix
     env:
-      SEMREL_PLUGIN_HOMESERVER: "https://matrix.org"
+      SEMREL_PLUGIN_HOMESERVER_URL: "https://matrix.org"
       SEMREL_PLUGIN_TOKEN: "${MATRIX_TOKEN}"
       SEMREL_PLUGIN_ROOM_ID: "!abcdef:matrix.org"
-      SEMREL_PLUGIN_MESSAGE_TEMPLATE: "Released {{ .TagName }}"
+      SEMREL_PLUGIN_MAX_RETRIES: "3"
+      SEMREL_PLUGIN_RETRY_DELAY: "2s"
 ```
 
 ## `SEMREL_PLUGIN_*` variables
 
 | Name | Required | Description | Default |
 | --- | --- | --- | --- |
-| `SEMREL_PLUGIN_HOMESERVER` | Required | Matrix homeserver base URL. | None |
+| `SEMREL_PLUGIN_HOMESERVER_URL` | Required | Matrix homeserver base URL. | None |
 | `SEMREL_PLUGIN_TOKEN` | Required | Matrix access token. | None |
 | `SEMREL_PLUGIN_ROOM_ID` | Required | Matrix room ID to post into. | None |
-| `SEMREL_PLUGIN_MESSAGE_TEMPLATE` | Optional | Template used to render the Matrix message body. | Built-in template |
+| `SEMREL_PLUGIN_MAX_RETRIES` | Optional | Retries on transient network failures and HTTP 5xx responses. | `3` |
+| `SEMREL_PLUGIN_RETRY_DELAY` | Optional | Delay between retry attempts. | `2s` |
+
+## Retry behavior
+
+The plugin retries transient failures caused by network errors or HTTP `5xx` responses. HTTP `2xx` and `4xx` responses are not retried. Each retry attempt is logged to standard error.
 
 ## `SEMREL_*` release context used
 

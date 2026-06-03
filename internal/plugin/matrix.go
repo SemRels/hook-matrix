@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-// ---------------------------------------------------------------------------
-// Matrix
-// ---------------------------------------------------------------------------
-
 // MatrixConfig holds the configuration for Matrix room notifications.
 type MatrixConfig struct {
 	// HomeserverURL is the Matrix homeserver URL (e.g., https://matrix.org).
@@ -28,6 +24,10 @@ type MatrixConfig struct {
 	AccessToken string
 	// Timeout is the HTTP client timeout (defaults to DefaultTimeout).
 	Timeout time.Duration
+	// MaxRetries controls how many transient failures are retried.
+	MaxRetries int
+	// RetryDelay is the wait time between retry attempts.
+	RetryDelay time.Duration
 }
 
 type matrixContent struct {
@@ -49,6 +49,12 @@ func NewMatrixNotifier(cfg MatrixConfig) *MatrixNotifier {
 	if t == 0 {
 		t = DefaultTimeout
 	}
+	if cfg.MaxRetries == 0 {
+		cfg.MaxRetries = DefaultMaxRetries
+	}
+	if cfg.RetryDelay == 0 {
+		cfg.RetryDelay = DefaultRetryDelay
+	}
 	return &MatrixNotifier{cfg: cfg, client: &http.Client{Timeout: t}}
 }
 
@@ -69,7 +75,7 @@ func (n *MatrixNotifier) Notify(ctx context.Context, version, changelog, reposit
 		return fmt.Errorf("matrix: marshal event: %w", err)
 	}
 
-	// Use a timestamp as the transaction ID for idempotency
+	// Use a timestamp as the transaction ID for idempotency.
 	txnID := fmt.Sprintf("semrel-%d", time.Now().UnixMilli())
 	url := fmt.Sprintf("%s/_matrix/client/v3/rooms/%s/send/m.room.message/%s",
 		strings.TrimRight(n.cfg.HomeserverURL, "/"),
@@ -77,14 +83,15 @@ func (n *MatrixNotifier) Notify(ctx context.Context, version, changelog, reposit
 		txnID,
 	)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(payload))
-	if err != nil {
-		return fmt.Errorf("matrix: create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+n.cfg.AccessToken)
-
-	resp, err := n.client.Do(req)
+	resp, err := retryDo(ctx, n.cfg.MaxRetries, n.cfg.RetryDelay, func() (*http.Response, error) {
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewReader(payload))
+		if err != nil {
+			return nil, fmt.Errorf("matrix: create request: %w", err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer "+n.cfg.AccessToken)
+		return n.client.Do(req)
+	})
 	if err != nil {
 		return fmt.Errorf("matrix: send event: %w", err)
 	}
