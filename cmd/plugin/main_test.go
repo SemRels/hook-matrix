@@ -45,7 +45,7 @@ func TestRunSuccess(t *testing.T) {
 		"SEMREL_VERSION":               "v1.2.3",
 		"SEMREL_PLUGIN_REPOSITORY":     "SemRels/semrel",
 	}), &stderr)
-	if code != 0 || stderr.Len() != 0 {
+	if code != 0 || stderr.String() != "plugin_schema_version=1\n" {
 		t.Fatalf("unexpected result: code=%d stderr=%q", code, stderr.String())
 	}
 	if fake.version != "v1.2.3" || fake.repo != "SemRels/semrel" {
