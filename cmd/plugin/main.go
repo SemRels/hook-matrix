@@ -25,7 +25,7 @@ var newNotifier = func(cfg plugin.MatrixConfig) notifier {
 }
 
 func run(ctx context.Context, getenv func(string) string, stderr io.Writer) int {
-	fmt.Fprintf(stderr, "plugin_schema_version=%d\n", pluginSchemaVersion)
+	_, _ = fmt.Fprintf(stderr, "plugin_schema_version=%d\n", pluginSchemaVersion)
 	homeserverURL := getenv("SEMREL_PLUGIN_HOMESERVER_URL")
 	token := getenv("SEMREL_PLUGIN_TOKEN")
 	roomID := getenv("SEMREL_PLUGIN_ROOM_ID")
