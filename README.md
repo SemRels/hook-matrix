@@ -1,6 +1,6 @@
 # hook-matrix
 
-[![Latest Release](https://img.shields.io/github/v/release/SemRels/hook-matrix?label=version\&color=blue)](https://github.com/SemRels/hook-matrix/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/SemRels/hook-matrix?label=version&color=blue)](https://github.com/SemRels/hook-matrix/releases/latest)
 
 Posts a release notification message to a Matrix room.
 
