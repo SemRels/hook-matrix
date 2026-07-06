@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-# SPDX-FileCopyrightText: 2026 The plugin-template Authors
+# SPDX-FileCopyrightText: 2026 The hook-matrix Authors
 
 # ── build stage ────────────────────────────────────────────────────────────────
-# Use BUILDPLATFORM so cross-compilation happens on the native runner (fast).
-# TARGETOS/TARGETARCH are injected by buildx for each platform slice.
-FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS build
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS build
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -25,10 +23,10 @@ ARG VERSION=dev
 ARG BUILD_DATE
 ARG VCS_REF
 
-LABEL org.opencontainers.image.title="semrel-plugin-hook-matrix" \
-      org.opencontainers.image.description="semrel plugin: hook-matrix" \
+LABEL org.opencontainers.image.title="semrel-plugin-plugin-template" \
+      org.opencontainers.image.description="semrel plugin template subprocess example" \
       org.opencontainers.image.url="https://semrel.io" \
-      org.opencontainers.image.source="https://github.com/SemRels/hook-matrix" \
+      org.opencontainers.image.source="https://github.com/SemRels/plugin-template" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
