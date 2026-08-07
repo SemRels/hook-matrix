@@ -95,7 +95,9 @@ func (n *MatrixNotifier) Notify(ctx context.Context, version, changelog, reposit
 	if err != nil {
 		return fmt.Errorf("matrix: send event: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 512))

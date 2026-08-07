@@ -32,11 +32,11 @@ func run(ctx context.Context, getenv func(string) string, stderr io.Writer) int 
 	version := firstNonEmpty(getenv("SEMREL_VERSION"), getenv("SEMREL_TAG_NAME"), getenv("SEMREL_NEXT_VERSION"))
 
 	if homeserverURL == "" || token == "" || roomID == "" {
-		fmt.Fprintln(stderr, "hook-matrix: SEMREL_PLUGIN_HOMESERVER_URL, SEMREL_PLUGIN_TOKEN, and SEMREL_PLUGIN_ROOM_ID are required")
+		_, _ = fmt.Fprintln(stderr, "hook-matrix: SEMREL_PLUGIN_HOMESERVER_URL, SEMREL_PLUGIN_TOKEN, and SEMREL_PLUGIN_ROOM_ID are required")
 		return 1
 	}
 	if version == "" {
-		fmt.Fprintln(stderr, "hook-matrix: SEMREL_VERSION, SEMREL_TAG_NAME, or SEMREL_NEXT_VERSION is required")
+		_, _ = fmt.Fprintln(stderr, "hook-matrix: SEMREL_VERSION, SEMREL_TAG_NAME, or SEMREL_NEXT_VERSION is required")
 		return 1
 	}
 	if getenv("SEMREL_DRY_RUN") == "true" {
@@ -45,12 +45,12 @@ func run(ctx context.Context, getenv func(string) string, stderr io.Writer) int 
 
 	maxRetries, err := parseMaxRetries(getenv("SEMREL_PLUGIN_MAX_RETRIES"))
 	if err != nil {
-		fmt.Fprintln(stderr, "hook-matrix:", err)
+		_, _ = fmt.Fprintln(stderr, "hook-matrix:", err)
 		return 1
 	}
 	retryDelay, err := parseRetryDelay(getenv("SEMREL_PLUGIN_RETRY_DELAY"))
 	if err != nil {
-		fmt.Fprintln(stderr, "hook-matrix:", err)
+		_, _ = fmt.Fprintln(stderr, "hook-matrix:", err)
 		return 1
 	}
 
@@ -62,7 +62,7 @@ func run(ctx context.Context, getenv func(string) string, stderr io.Writer) int 
 		RetryDelay:    retryDelay,
 	}
 	if err := newNotifier(cfg).Notify(ctx, version, getenv("SEMREL_CHANGELOG"), getenv("SEMREL_PLUGIN_REPOSITORY")); err != nil {
-		fmt.Fprintln(stderr, "hook-matrix:", err)
+		_, _ = fmt.Fprintln(stderr, "hook-matrix:", err)
 		return 1
 	}
 	return 0
