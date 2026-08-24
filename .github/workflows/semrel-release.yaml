@@ -54,7 +54,6 @@ jobs:
           tar -xzf "$archive" -C "${RUNNER_TEMP}"
 semrel_dir="${RUNNER_TEMP}/semrel-dl"
           mkdir -p "${semrel_dir}"
-          tar -xzf "${RUNNER_TEMP}"/semrel_*_linux_amd64.tar.gz -C "${semrel_dir}"
           mv "${semrel_dir}/semrel" "${RUNNER_TEMP}/semrel"
           chmod +x "${RUNNER_TEMP}/semrel"
           "${RUNNER_TEMP}/semrel" --version
