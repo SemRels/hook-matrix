@@ -28,6 +28,7 @@ jobs:
       image: ${{ steps.version.outputs.image }}
       build_date: ${{ steps.source.outputs.build_date }}
       source_sha: ${{ steps.source.outputs.source_sha }}
+      existing_release: ${{ steps.release_state.outputs.existing_release }}
     steps:
       - name: Resolve and validate version
         id: version
@@ -89,6 +90,21 @@ jobs:
             printf 'stable=%s\n' "${stable}"
             printf 'image=ghcr.io/%s\n' "${GITHUB_REPOSITORY,,}"
           } >> "${GITHUB_OUTPUT}"
+
+      - name: Check existing GitHub release
+        id: release_state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh api --silent "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists; publication will be skipped."
+            echo "existing_release=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "existing_release=false" >> "${GITHUB_OUTPUT}"
+          fi
 
       - name: Check out exact release source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -261,6 +277,7 @@ jobs:
   docker:
     name: Publish validated multiarch image
     needs: [version, build, docker-validate]
+    if: needs.version.outputs.existing_release != 'true'
     runs-on: ubuntu-latest
     concurrency:
       group: exact-image-${{ needs.version.outputs.exact_key }}
@@ -465,6 +482,7 @@ jobs:
   publish:
     name: Publish GitHub release and notify registry
     needs: [version, build, docker]
+    if: needs.version.outputs.existing_release != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -534,7 +552,7 @@ jobs:
   reconcile:
     name: Reconcile mutable image tags
     needs: [version, docker, publish]
-    if: needs.version.outputs.stable == 'true'
+    if: needs.version.outputs.stable == 'true' && needs.version.outputs.existing_release != 'true'
     runs-on: ubuntu-latest
     concurrency:
       group: mutable-image-tags
