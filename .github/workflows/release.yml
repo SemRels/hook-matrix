@@ -128,6 +128,7 @@ jobs:
   build:
     name: Build ${{ matrix.goos }}-${{ matrix.goarch }}
     needs: version
+    if: needs.version.outputs.existing_release != 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -186,6 +187,7 @@ jobs:
   docker-validate:
     name: Validate image (${{ matrix.platform.arch }})
     needs: version
+    if: needs.version.outputs.existing_release != 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
