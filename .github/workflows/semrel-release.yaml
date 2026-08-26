@@ -78,6 +78,7 @@ jobs:
         run: "${RUNNER_TEMP}/semrel release --github-output"
 
       - name: Push tag to GitHub
+        id: tag
         if: steps.semrel.outputs.released == 'true'
         env:
           TAG: ${{ steps.semrel.outputs.tag }}
@@ -105,12 +106,14 @@ jobs:
           fi
           if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
             echo "Tag ${TAG} already exists on remote; skipping."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
           else
             git push origin "refs/tags/${TAG}"
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Trigger validated binary and image release
-        if: steps.semrel.outputs.released == 'true'
+        if: steps.semrel.outputs.released == 'true' && steps.tag.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ steps.semrel.outputs.tag }}
