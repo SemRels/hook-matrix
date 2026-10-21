@@ -39,25 +39,27 @@ cosign verify ghcr.io/semrels/hook-matrix:latest \
 
 ```yaml
 plugins:
-  - name: hook-matrix
-    path: ~/.semrel/plugins/semrel-plugin-hook-matrix
-    env:
-      SEMREL_PLUGIN_HOMESERVER_URL: "https://matrix.org"
-      SEMREL_PLUGIN_TOKEN: "${MATRIX_TOKEN}"
-      SEMREL_PLUGIN_ROOM_ID: "!abcdef:matrix.org"
-      SEMREL_PLUGIN_MAX_RETRIES: "3"
-      SEMREL_PLUGIN_RETRY_DELAY: "2s"
+  - uses: "@semrel/hook-matrix"
+    phase: release
+    args:
+      homeserver_url: "https://matrix.org"
+      token: "${MATRIX_TOKEN}"
+      room_id: "!abcdef:matrix.org"
+      max_retries: "3"
+      retry_delay: "2s"
 ```
 
-## `SEMREL_PLUGIN_*` variables
+## Options
 
-| Name | Required | Description | Default |
-| --- | --- | --- | --- |
-| `SEMREL_PLUGIN_HOMESERVER_URL` | Required | Matrix homeserver base URL. | None |
-| `SEMREL_PLUGIN_TOKEN` | Required | Matrix access token. | None |
-| `SEMREL_PLUGIN_ROOM_ID` | Required | Matrix room ID to post into. | None |
-| `SEMREL_PLUGIN_MAX_RETRIES` | Optional | Retries on transient network failures and HTTP 5xx responses. | `3` |
-| `SEMREL_PLUGIN_RETRY_DELAY` | Optional | Delay between retry attempts. | `2s` |
+Every option can be set as an entry under `args` in `.semrel.yaml`. semrel passes each entry to the plugin as the environment variable shown in the table, so you can also set that variable directly (for example in your CI environment) instead of using `args`.
+
+| Argument | Environment variable | Required | Description | Default |
+| --- | --- | --- | --- | --- |
+| `homeserver_url` | `SEMREL_PLUGIN_HOMESERVER_URL` | Required | Matrix homeserver base URL. | None |
+| `token` | `SEMREL_PLUGIN_TOKEN` | Required | Matrix access token. | None |
+| `room_id` | `SEMREL_PLUGIN_ROOM_ID` | Required | Matrix room ID to post into. | None |
+| `max_retries` | `SEMREL_PLUGIN_MAX_RETRIES` | Optional | Retries on transient network failures and HTTP 5xx responses. | `3` |
+| `retry_delay` | `SEMREL_PLUGIN_RETRY_DELAY` | Optional | Delay between retry attempts. | `2s` |
 
 ## Retry behavior
 
