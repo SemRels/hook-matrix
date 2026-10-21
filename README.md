@@ -1,6 +1,10 @@
 # hook-matrix
 
 [![Latest Release](https://img.shields.io/github/v/release/SemRels/hook-matrix?label=version&color=blue)](https://github.com/SemRels/hook-matrix/releases/latest)
+[![CI](https://github.com/SemRels/hook-matrix/actions/workflows/ci.yml/badge.svg)](https://github.com/SemRels/hook-matrix/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/SemRels/hook-matrix)](LICENSE)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/SemRels/hook-matrix/badge)](https://scorecard.dev/viewer/?uri=github.com/SemRels/hook-matrix)
+[![REUSE status](https://api.reuse.software/badge/github.com/SemRels/hook-matrix)](https://api.reuse.software/info/github.com/SemRels/hook-matrix)
 
 Posts a release notification message to a Matrix room.
 
