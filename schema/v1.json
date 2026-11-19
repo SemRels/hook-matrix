@@ -4,6 +4,7 @@
   "title": "hook-matrix plugin configuration",
   "description": "Schema v1 for the hook-matrix semrel plugin. Configure via SEMREL_* environment variables.",
   "type": "object",
+  "x-semrel-dry-run": true,
   "properties": {
     "SEMREL_PLUGIN_HOMESERVER_URL": {
       "type": "string",
